@@ -63,7 +63,7 @@ def main(center, host, port, http_port, bokeh_port, show, _bokeh):
                      for name in ['status', 'tasks']]
             binname = sys.argv[0][:-len('dscheduler')] + 'bokeh'
             args = ([binname, 'serve'] + paths +
-                    ['--log-level', 'warning',
+                    ['--log-level', 'debug',
                      '--check-unused-sessions=50',
                      '--unused-session-lifetime=1',
                      '--port', str(bokeh_port)] +
@@ -71,6 +71,7 @@ def main(center, host, port, http_port, bokeh_port, show, _bokeh):
             if show:
                 args.append('--show')
 
+            logging.info("Serializing bokeh options:\n".format(bokeh_options))
             bokeh_options = {'host': host if given_host else '127.0.0.1',
                              'http-port': http_port,
                              'tcp-port': port,
@@ -78,6 +79,7 @@ def main(center, host, port, http_port, bokeh_port, show, _bokeh):
             with open('.dask-web-ui.json', 'w') as f:
                 json.dump(bokeh_options, f, indent=2)
 
+            logging.info("Starting bokeh server with args:\n".format(args))
             if sys.version_info[0] >= 3:
                 from bokeh.command.bootstrap import main
                 ctx = multiprocessing.get_context('spawn')
