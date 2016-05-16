@@ -65,7 +65,7 @@ def main(center, host, port, http_port, bokeh_port, show, _bokeh, bokeh_whitelis
             binname = 'bokeh.bat' if 'win' in sys.platform else 'bokeh'
             binname = os.path.join(os.path.dirname(sys.argv[0]), binname)
             args = ([binname, 'serve'] + paths +
-                    ['--log-level', 'warning',
+                    ['--log-level', 'debug',
                      '--check-unused-sessions=50',
                      '--unused-session-lifetime=1',
                      '--port', str(bokeh_port)] +
@@ -77,9 +77,13 @@ def main(center, host, port, http_port, bokeh_port, show, _bokeh, bokeh_whitelis
                              'http-port': http_port,
                              'tcp-port': port,
                              'bokeh-port': bokeh_port}
+
+            logging.info("Serializing bokeh options:\n{}".format(bokeh_options)
+                         )
             with open('.dask-web-ui.json', 'w') as f:
                 json.dump(bokeh_options, f, indent=2)
 
+            logging.info("Starting bokeh server with args:\n{}".format(args))
             if sys.version_info[0] >= 3:
                 from bokeh.command.bootstrap import main
                 ctx = multiprocessing.get_context('spawn')
